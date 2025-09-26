@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import GithubPlat from "./icons/GitHubPlat";
 
 export default function Header() {
+  return null;
   const { t } = useTranslation();
   return (
     <div className="fixed top-0 z-20 h-20 w-full px-5 backdrop-blur-xl md:px-10 text-white flex items-center justify-between first-letter:shadow-sm">
