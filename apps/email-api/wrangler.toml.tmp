@@ -1,0 +1,8 @@
+name = "email-api"
+main = "src/index.ts"
+compatibility_date = "2023-12-18"
+
+[vars]
+TURSO_DB_AUTH_TOKEN = ""
+TURSO_DB_URL = ""
+EMAIL_DOMAIN = ""

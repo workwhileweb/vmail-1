@@ -10,15 +10,10 @@ export default function Header() {
       <Link to="/" className="font-bold flex items-center justify-center gap-3">
         <VmailLogo />
         <button className="cool-btn">
-          <span>VMAIL.DEV</span>
+          <span>VMAIL</span>
         </button>
       </Link>
-      <Link
-        to="https://wr.do"
-        target="_blank"
-        className="ml-auto text-sm md:text-base hidden md:block">
-        {t("Pro")}
-      </Link>
+      
       <Link
         to="/about"
         className="ml-3 md:ml-8 text-sm md:text-base hidden md:block">
