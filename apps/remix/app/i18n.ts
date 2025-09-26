@@ -13,6 +13,7 @@ export default {
     "pt",
     "tr",
     "ru",
+    "vi",
   ],
   // This is the language you want to use in case
   // if the user language is not in the supportedLngs

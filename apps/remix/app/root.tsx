@@ -44,9 +44,10 @@ export default function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-
-<script defer src="https://analytics.tempmail100.com/script.js" data-website-id="ba393eee-5919-41c1-8b2e-2f49c18fddf7"></script>
-        {/* Google Analytics */}
+        
+{/*
+        <script defer src="https://analytics.tempmail100.com/script.js" 
+        data-website-id="ba393eee-5919-41c1-8b2e-2f49c18fddf7"></script>
         <script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-39WSEGK1FQ"></script>
@@ -59,6 +60,8 @@ export default function App() {
               gtag('config', 'G-39WSEGK1FQ');
             `,
           }}></script>
+*/}
+
       </head>
       <body className="">
         <Outlet />
