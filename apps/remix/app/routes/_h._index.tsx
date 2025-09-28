@@ -30,6 +30,8 @@ import { getRandomCharacter } from "lib/hooks/utlis";
 import { Toaster } from "react-hot-toast";
 import { usePasswordModal } from "~/components/password";
 import Password from "~/components/icons/Password";
+import RandomSwap from "~/components/icons/RandomSwap";
+import { useState } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -215,6 +217,20 @@ export default function Index() {
 
   const { t } = useTranslation();
 
+  // State for selected domain
+  const [selectedDomain, setSelectedDomain] = useState(
+    loaderData.domains?.[0] || ""
+  );
+
+  // Function to randomly select a domain
+  const handleRandomDomain = () => {
+    if (loaderData.domains && loaderData.domains.length > 1) {
+      const randomIndex = Math.floor(Math.random() * loaderData.domains.length);
+      const randomDomain = loaderData.domains[randomIndex];
+      setSelectedDomain(randomDomain);
+    }
+  };
+
   // const { SenderModal, setShowSenderModal } = useSenderModal(
   //   loaderData.userMailbox
   // );
@@ -306,19 +322,30 @@ export default function Index() {
             {loaderData.domains && loaderData.domains.length > 1 && (
               <>
                 <div className="mb-3 text-sm font-semibold">{t("Domain")}</div>
-                <select
-                  id="selectDomain"
-                  name="selectDomain"
-                  className="mb-4 border text-sm rounded-md block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-gray-500">
-                  {loaderData.domains.map((item: string) => (
-                    <option
-                      className="py-2 h-10"
-                      selected={item === loaderData.domains[0]}
-                      value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex gap-2 mb-4">
+                  <select
+                    id="selectDomain"
+                    name="selectDomain"
+                    value={selectedDomain}
+                    onChange={(e) => setSelectedDomain(e.target.value)}
+                    className="border text-sm rounded-md block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-gray-500">
+                    {loaderData.domains.map((item: string) => (
+                      <option
+                        key={item}
+                        className="py-2 h-10"
+                        value={item}>
+                        {item}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={handleRandomDomain}
+                    className="px-3 py-2.5 bg-gray-600 hover:bg-gray-500 rounded-md transition-colors duration-200 flex items-center justify-center"
+                    title="Chọn domain ngẫu nhiên">
+                    <RandomSwap className="w-4 h-4 text-white" />
+                  </button>
+                </div>
               </>
             )}
             <button

@@ -1,21 +1,72 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
+  "version": "0.2.0",
+  "configurations": [{
+      "name": "🚀 Run Remix App (Dev)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/apps/remix",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "🏗️ Build Remix App",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/apps/remix",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["build"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "🔧 Run Remix App (Production)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/apps/remix",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["start"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    {
+      "name": "🧪 Run Type Check",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/apps/remix",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["typecheck"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "🔍 Run Lint",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/apps/remix",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["lint"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ],
+  "compounds": [{
+    "name": "🚀 Full Development Setup",
     "configurations": [
-    
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}\\apps\\remix\\app\\routes\\_h._index.tsx",
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
-        }
-    ]
+      "🚀 Run Remix App (Dev)"
+    ],
+    "stopAll": true
+  }]
 }

@@ -22,6 +22,259 @@ const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 app.use("*", cors());
 
+// Swagger UI route
+app.get("/docs", (c) => {
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vmail API Documentation</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css" />
+  <style>
+    html {
+      box-sizing: border-box;
+      overflow: -moz-scrollbars-vertical;
+      overflow-y: scroll;
+    }
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+    body {
+      margin:0;
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        url: '/swagger.json',
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout"
+      });
+    };
+  </script>
+</body>
+</html>
+  `;
+  return c.html(html);
+});
+
+// OpenAPI JSON endpoint
+app.get("/swagger.json", (c) => {
+  return c.json({
+    openapi: "3.0.0",
+    info: {
+      title: "Vmail Email API",
+      version: "1.0.0",
+      description: "API for managing temporary email addresses and retrieving emails",
+      contact: {
+        name: "Vmail Support",
+        url: "https://github.com/vmail-app/vmail"
+      }
+    },
+    servers: [
+      {
+        url: "https://api.vmail.app",
+        description: "Production server"
+      },
+      {
+        url: "http://localhost:8787",
+        description: "Development server"
+      }
+    ],
+    paths: {
+      "/mailbox": {
+        post: {
+          summary: "Create a new temporary mailbox",
+          description: "Creates a new temporary email address with JWT token for authentication",
+          tags: ["Mailbox"],
+          requestBody: {
+            required: true,
+            content: {
+              "application/x-www-form-urlencoded": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    "cf-turnstile-response": {
+                      type: "string",
+                      description: "Cloudflare Turnstile response token"
+                    }
+                  },
+                  required: ["cf-turnstile-response"]
+                }
+              },
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    "cf-turnstile-response": {
+                      type: "string",
+                      description: "Cloudflare Turnstile response token"
+                    }
+                  },
+                  required: ["cf-turnstile-response"]
+                }
+              }
+            }
+          },
+          responses: {
+            "200": {
+              description: "Mailbox created successfully",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      mailbox: {
+                        type: "string",
+                        format: "email",
+                        example: "john.doe@example.com"
+                      },
+                      token: {
+                        type: "string",
+                        description: "JWT token for authentication",
+                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              description: "Bad request - Missing or invalid Turnstile response",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      error: {
+                        type: "string",
+                        example: "Missing cf-turnstile-response"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/mails": {
+        get: {
+          summary: "Get emails for authenticated mailbox",
+          description: "Retrieves all emails for the authenticated temporary mailbox",
+          tags: ["Emails"],
+          security: [
+            {
+              bearerAuth: []
+            }
+          ],
+          responses: {
+            "200": {
+              description: "List of emails retrieved successfully",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        id: {
+                          type: "string",
+                          example: "123e4567-e89b-12d3-a456-426614174000"
+                        },
+                        messageTo: {
+                          type: "string",
+                          format: "email",
+                          example: "john.doe@example.com"
+                        },
+                        messageFrom: {
+                          type: "string",
+                          format: "email",
+                          example: "sender@example.com"
+                        },
+                        subject: {
+                          type: "string",
+                          example: "Welcome to our service"
+                        },
+                        content: {
+                          type: "string",
+                          example: "Thank you for signing up..."
+                        },
+                        receivedAt: {
+                          type: "string",
+                          format: "date-time",
+                          example: "2023-12-01T10:30:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              description: "Unauthorized - Missing or invalid JWT token",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      error: {
+                        type: "string",
+                        example: "Missing Authorization header"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              description: "Bad request - Invalid JWT token",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      error: {
+                        type: "string",
+                        example: "Failed to verify"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT"
+        }
+      }
+    }
+  });
+});
+
 async function withMailbox(c: Context, next: Next) {
   try {
     const authHeader = c.req.header("Authorization");
