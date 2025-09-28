@@ -6,7 +6,7 @@ import Notifications from "~/components/Notification";
 export default function HomeLayout() {
   return (
     <div className="mx-auto min-h-screen flex flex-col bg-[#1f2023]">
-      {/* <Header /> */}
+      <Header />
       {/* <Notifications /> */}
       <Outlet />
       <Footer />
