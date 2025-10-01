@@ -12,12 +12,15 @@ A Cloudflare Workers API for managing temporary email addresses and retrieving e
 ## API Endpoints
 
 ### POST /mailbox
+
 Creates a new temporary email address.
 
 **Request Body:**
+
 - `cf-turnstile-response` (string): Cloudflare Turnstile response token
 
 **Response:**
+
 ```json
 {
   "mailbox": "user@example.com",
@@ -26,12 +29,15 @@ Creates a new temporary email address.
 ```
 
 ### GET /mails
+
 Retrieves all emails for the authenticated mailbox.
 
 **Headers:**
+
 - `Authorization: Bearer <jwt_token>`
 
 **Response:**
+
 ```json
 [
   {
@@ -43,6 +49,19 @@ Retrieves all emails for the authenticated mailbox.
     "receivedAt": "2023-12-01T10:30:00Z"
   }
 ]
+```
+
+### GET /domains
+
+Retrieves all available email domains for creating temporary email addresses.
+
+**Response:**
+
+```json
+{
+  "domains": ["example.com", "test.org", "demo.net"],
+  "count": 3
+}
 ```
 
 ## Documentation
@@ -77,6 +96,7 @@ pnpm deploy
 The API uses JWT tokens for authentication. When you create a mailbox, you receive a JWT token that must be included in the `Authorization` header for subsequent requests.
 
 Example:
+
 ```
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```

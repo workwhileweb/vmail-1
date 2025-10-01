@@ -89,7 +89,7 @@ app.get("/swagger.json", (c) => {
     },
     servers: [
       {
-        url: "https://api.vmail.app",
+        url: "https://email-api.huutuan.workers.dev",
         description: "Production server"
       },
       {
@@ -261,6 +261,40 @@ app.get("/swagger.json", (c) => {
             }
           }
         }
+      },
+      "/domains": {
+        get: {
+          summary: "Get all available email domains",
+          description: "Retrieves a list of all available email domains for creating temporary email addresses",
+          tags: ["Domains"],
+          responses: {
+            "200": {
+              description: "List of available domains retrieved successfully",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      domains: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                          format: "hostname"
+                        },
+                        example: ["example.com", "test.org", "demo.net"]
+                      },
+                      count: {
+                        type: "integer",
+                        description: "Total number of available domains",
+                        example: 3
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     components: {
@@ -348,6 +382,14 @@ app.get("/mails", withMailbox, async (c) => {
   const db = getWebTursoDB(c.env.TURSO_DB_URL, c.env.TURSO_DB_RO_AUTH_TOKEN);
   const mails = await getEmailsByMessageTo(db, mailbox);
   return c.json(mails);
+});
+
+app.get("/domains", (c) => {
+  const domains = c.env.EMAIL_DOMAIN?.split(",") || [];
+  return c.json({
+    domains: domains.map(domain => domain.trim()),
+    count: domains.length
+  });
 });
 
 export default app;

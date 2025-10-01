@@ -15,23 +15,23 @@ import randomName from "@scaleway/random-name";
 import { getEmailByPassword, getEmailsByMessageTo } from "database/dao";
 import { getWebTursoDB } from "database/db";
 
+import Clock from "~/components/icons/Clock";
+import Cloudflare from "~/components/icons/Cloudflare";
+import Info from "~/components/icons/Info";
+import ShieldCheck from "~/components/icons/ShieldCheck";
 import CopyButton from "../components/CopyButton";
 import MailListWithQuery from "../components/MailList";
 import { userMailboxCookie } from "../cookies.server";
-import ShieldCheck from "~/components/icons/ShieldCheck";
-import Cloudflare from "~/components/icons/Cloudflare";
-import Clock from "~/components/icons/Clock";
-import Info from "~/components/icons/Info";
 
 import { useTranslation } from "react-i18next";
 // import { useSenderModal } from "~/components/sender";
 import { getRandomCharacter } from "lib/hooks/utlis";
 
+import { useState } from "react";
 import { Toaster } from "react-hot-toast";
-import { usePasswordModal } from "~/components/password";
 import Password from "~/components/icons/Password";
 import RandomSwap from "~/components/icons/RandomSwap";
-import { useState } from "react";
+import { usePasswordModal } from "~/components/password";
 
 export const meta: MetaFunction = () => {
   return [
@@ -46,7 +46,25 @@ export const meta: MetaFunction = () => {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const siteKey = process.env.TURNSTILE_KEY || "";
-  const domains = (process.env.EMAIL_DOMAIN || "").split(",");
+  
+  // Fetch domains from API endpoint
+  let domains: string[] = [];
+  try {
+    const apiUrl = process.env.EMAIL_API_URL || "https://email-api.huutuan.workers.dev";
+    const response = await fetch(`${apiUrl}/domains`);
+    if (response.ok) {
+      const data = await response.json();
+      domains = data.domains || [];
+    } else {
+      // Fallback to environment variable if API fails
+      domains = (process.env.EMAIL_DOMAIN || "").split(",");
+    }
+  } catch (error) {
+    console.error("Failed to fetch domains from API:", error);
+    // Fallback to environment variable if API fails
+    domains = (process.env.EMAIL_DOMAIN || "").split(",");
+  }
+  
   const userMailbox =
     ((await userMailboxCookie.parse(
       request.headers.get("Cookie")
@@ -121,10 +139,27 @@ export const action: ActionFunction = async ({ request }) => {
       }
     }
 
-    const domains = (process.env.EMAIL_DOMAIN || "").split(",");
+    // Fetch domains from API endpoint
+    let domains: string[] = [];
+    try {
+      const apiUrl = process.env.EMAIL_API_URL || "https://email-api.huutuan.workers.dev";
+      const response = await fetch(`${apiUrl}/domains`);
+      if (response.ok) {
+        const data = await response.json();
+        domains = data.domains || [];
+      } else {
+        // Fallback to environment variable if API fails
+        domains = (process.env.EMAIL_DOMAIN || "").split(",");
+      }
+    } catch (error) {
+      console.error("Failed to fetch domains from API:", error);
+      // Fallback to environment variable if API fails
+      domains = (process.env.EMAIL_DOMAIN || "").split(",");
+    }
+    
     if (domains.length === 0) {
       return {
-        error: "Email domain not set in .env",
+        error: "No email domains available",
       };
     }
 
